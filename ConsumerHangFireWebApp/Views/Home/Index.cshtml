@@ -1,0 +1,203 @@
+@{
+    ViewBag.Title = "HangFire Integration Demo";
+}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="main-container">
+        <div class="hero-content text-center">
+            <h1>HangFire Integration Demo</h1>
+            <p class="lead">Professional background job processing with .NET Framework 4.8</p>
+            <a href="/hangfire" target="_blank" class="btn">View HangFire Dashboard &raquo;</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-container">
+    <!-- Section Header -->
+    <div class="section-header">
+        <h2>Background Job Examples</h2>
+        <p>Click the buttons below to test different types of HangFire jobs. Check the <a href="/hangfire" target="_blank">HangFire Dashboard</a> to see job execution status and details.</p>
+    </div>
+
+    <!-- Job Cards -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h3>Immediate Jobs</h3>
+                </div>
+                <div class="job-card-body">
+                    <p>These jobs execute immediately when queued.</p>
+                    
+                    <button type="button" class="btn btn-success btn-block" onclick="testWelcomeJob()">
+                        <span class="glyphicon glyphicon-envelope"></span>
+                        Test Customer Welcome Job
+                    </button>
+                    <small class="text-muted">Simulates sending a welcome email to a new customer</small>
+                    
+                    <button type="button" class="btn btn-info btn-block" onclick="testOrderJob()">
+                        <span class="glyphicon glyphicon-shopping-cart"></span>
+                        Test Order Processing Job
+                    </button>
+                    <small class="text-muted">Simulates processing a customer order with multiple steps</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h3>Scheduled & Recurring Jobs</h3>
+                </div>
+                <div class="job-card-body">
+                    <p>These jobs demonstrate scheduling and recurring functionality.</p>
+                    
+                    <button type="button" class="btn btn-warning btn-block" onclick="testScheduledJob()">
+                        <span class="glyphicon glyphicon-time"></span>
+                        Test Scheduled Job (30s delay)
+                    </button>
+                    <small class="text-muted">Schedules a welcome job to run in 30 seconds</small>
+                    
+                    <button type="button" class="btn btn-primary btn-block" onclick="testRecurringJob()">
+                        <span class="glyphicon glyphicon-repeat"></span>
+                        Create Recurring Job (Every Minute)
+                    </button>
+                    <small class="text-muted">Creates a job that runs every minute</small>
+                    
+                    <button type="button" class="btn btn-danger btn-block" onclick="deleteRecurringJob()">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Delete Recurring Job
+                    </button>
+                    <small class="text-muted">Removes the recurring job</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Job Results -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="job-card">
+                <div class="job-card-header">
+                    <h3>Job Results</h3>
+                </div>
+                <div class="job-card-body">
+                    <div id="job-results">
+                        <p class="text-muted">Click any button above to see job execution results here...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Integration Notes -->
+    <div class="integration-notes">
+        <div class="panel-heading">
+            <h3>Integration Notes</h3>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-info">
+                <h4>How This Integration Works:</h4>
+                <ul>
+                    <li><strong>Library Reference:</strong> This project references the HangFireProj library</li>
+                    <li><strong>OWIN Configuration:</strong> HangFire is configured in Startup.cs using OWIN middleware</li>
+                    <li><strong>Custom Jobs:</strong> Jobs are created in the Jobs folder, inheriting from BaseJob</li>
+                    <li><strong>Job Execution:</strong> Jobs are queued using JobService.EnqueueJob&lt;T&gt;() method</li>
+                    <li><strong>Configuration:</strong> Connection string and settings are in Web.config</li>
+                    <li><strong>Dashboard:</strong> Accessible at /hangfire with OWIN configuration</li>
+                </ul>
+            </div>
+            
+            <div class="alert alert-warning">
+                <h4>Database Setup Required:</h4>
+                <p>Make sure you have:</p>
+                <ul>
+                    <li>SQL Server running (Express or full version)</li>
+                    <li>Database named "HangFireDB" created</li>
+                    <li>Connection string updated in Web.config if needed</li>
+                    <li>HangFire will automatically create the required tables</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        function testWelcomeJob() {
+            $.post('@Url.Action("TestWelcomeJob", "Home")', function(data) {
+                displayResult(data);
+            }).fail(function() {
+                displayResult({ success: false, message: "Error communicating with server" });
+            });
+        }
+
+        function testOrderJob() {
+            $.post('@Url.Action("TestOrderJob", "Home")', function(data) {
+                displayResult(data);
+            }).fail(function() {
+                displayResult({ success: false, message: "Error communicating with server" });
+            });
+        }
+
+        function testScheduledJob() {
+            $.post('@Url.Action("TestScheduledJob", "Home")', function(data) {
+                displayResult(data);
+            }).fail(function() {
+                displayResult({ success: false, message: "Error communicating with server" });
+            });
+        }
+
+        function testRecurringJob() {
+            $.post('@Url.Action("TestRecurringJob", "Home")', function(data) {
+                displayResult(data);
+            }).fail(function() {
+                displayResult({ success: false, message: "Error communicating with server" });
+            });
+        }
+
+        function deleteRecurringJob() {
+            $.post('@Url.Action("DeleteRecurringJob", "Home")', function(data) {
+                displayResult(data);
+            }).fail(function() {
+                displayResult({ success: false, message: "Error communicating with server" });
+            });
+        }
+
+        function displayResult(result) {
+            var alertClass = result.success ? 'alert-success' : 'alert-danger';
+            var icon = result.success ? 'glyphicon-ok' : 'glyphicon-exclamation-sign';
+            
+            var html = '<div class="alert ' + alertClass + ' alert-dismissible" role="alert">';
+            html += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+            html += '<span class="glyphicon ' + icon + '"></span> ';
+            html += '<strong>' + (result.success ? 'Success!' : 'Error!') + '</strong> ';
+            html += result.message;
+            
+            if (result.success && result.jobId) {
+                html += '<br><small><strong>Job ID:</strong> ' + result.jobId + '</small>';
+            }
+            
+            if (result.orderId) {
+                html += '<br><small><strong>Order ID:</strong> ' + result.orderId + '</small>';
+            }
+            
+            if (result.scheduledFor) {
+                html += '<br><small><strong>Scheduled For:</strong> ' + result.scheduledFor + '</small>';
+            }
+            
+            html += '</div>';
+            
+            $('#job-results').html(html);
+            
+            // Auto-dismiss success messages after 10 seconds
+            if (result.success) {
+                setTimeout(function() {
+                    $('#job-results .alert').fadeOut();
+                }, 10000);
+            }
+        }
+    </script>
+}

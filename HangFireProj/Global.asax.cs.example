@@ -1,0 +1,33 @@
+using HangFireProj.Extensions;
+using HangFireProj.Configuration;
+using System;
+using System.Web;
+
+namespace YourProject
+{
+    public class Global : HttpApplication
+    {
+        protected void Application_Start(object sender, EventArgs e)
+        {
+            // BEP - Initialize HangFire with default configuration from web.config
+            var options = "DefaultConnection".InitializeHangFireFromConfig();
+            
+            // BEP - Configure dashboard with custom authorization (optional)
+            options.ConfigureDashboard((context) =>
+            {
+                // BEP - Custom authorization: allow only authenticated administrators
+                return context.User.Identity.IsAuthenticated && 
+                       context.User.IsInRole("Administrator");
+            });
+            
+            // BEP - Alternative: Allow anonymous access in development
+            // options.ConfigureDashboard(); // Uses default authorization (debug mode only)
+        }
+
+        protected void Application_End(object sender, EventArgs e)
+        {
+            // BEP - Clean up HangFire resources when application shuts down
+            HangFireExtensions.StopHangFire();
+        }
+    }
+}
